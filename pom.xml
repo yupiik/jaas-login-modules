@@ -7,6 +7,8 @@
   <groupId>io.yupiik.jaas</groupId>
   <artifactId>jaas-login-modules</artifactId>
   <version>1.0.0-SNAPSHOT</version>
+  <name>Yupiik JAAS Login Modules</name>
+  <description>Provides Helper JAAS LoginModules to ease integrations with 3rd parties (like Apache TomEE/ActiveMQ).</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
