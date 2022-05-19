@@ -1,0 +1,97 @@
+package io.yupiik.jaas.loginmodules;
+
+import io.yupiik.jaas.loginmodules.principal.SimplePrincipal;
+import org.junit.jupiter.api.Test;
+
+import javax.security.auth.Subject;
+import javax.security.auth.login.AppConfigurationEntry;
+import javax.security.auth.login.Configuration;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static io.yupiik.jaas.loginmodules.test.Extractors.principals;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
+import static javax.security.auth.login.AppConfigurationEntry.LoginModuleControlFlag.OPTIONAL;
+import static javax.security.auth.login.AppConfigurationEntry.LoginModuleControlFlag.REQUIRED;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class ConditionalDelegatingLoginModuleTest {
+    @Test
+    void ok() throws LoginException {
+        final Map<String, Object> options = new HashMap<>();
+        options.put("matcher.regex", ".+");
+        options.put("delegate.class", ProvidingBPrincipalLM.class.getName());
+
+        final LoginContext context = new LoginContext(
+                "ConditionalDelegatingLoginModuleTest",
+                new Subject(),
+                null,
+                new Configuration() {
+                    @Override
+                    public AppConfigurationEntry[] getAppConfigurationEntry(final String name) {
+                        return new AppConfigurationEntry[]{
+                                new AppConfigurationEntry(
+                                        ProvidingA1PrincipalLM.class.getName(),
+                                        REQUIRED,
+                                        emptyMap()),
+                                new AppConfigurationEntry(
+                                        ConditionalDelegatingLoginModule.class.getName(),
+                                        OPTIONAL,
+                                        options)
+                        };
+                    }
+                });
+        context.login();
+        assertEquals(asList("a1", "b"), principals(context));
+    }
+
+    @Test
+    void ko() throws LoginException {
+        final Map<String, Object> options = new HashMap<>();
+        options.put("matcher.regex", "c.+");
+        options.put("delegate.class", ProvidingBPrincipalLM.class.getName());
+
+        final LoginContext context = new LoginContext(
+                "ConditionalDelegatingLoginModuleTest",
+                new Subject(),
+                null,
+                new Configuration() {
+                    @Override
+                    public AppConfigurationEntry[] getAppConfigurationEntry(final String name) {
+                        return new AppConfigurationEntry[]{
+                                new AppConfigurationEntry(
+                                        ProvidingA1PrincipalLM.class.getName(),
+                                        REQUIRED,
+                                        emptyMap()),
+                                new AppConfigurationEntry(
+                                        ConditionalDelegatingLoginModule.class.getName(),
+                                        OPTIONAL,
+                                        options)
+                        };
+                    }
+                });
+        context.login();
+        assertEquals(singletonList("a1"), principals(context));
+    }
+
+    public static class ProvidingBPrincipalLM extends BaseLoginModule {
+        @Override
+        protected List<Principal> computePrincipals() {
+            return singletonList(new SimplePrincipal("b"));
+        }
+    }
+
+    public static class ProvidingA1PrincipalLM extends BaseLoginModule {
+        @Override
+        protected List<Principal> computePrincipals() {
+            return singletonList(new SimplePrincipal("a1"));
+        }
+    }
+}
+

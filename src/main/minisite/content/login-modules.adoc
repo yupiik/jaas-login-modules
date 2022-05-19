@@ -1,0 +1,87 @@
+= Login Modules
+:minisite-index: 200
+:minisite-index-title: Login Modules
+:minisite-index-description: List of reusable login modules.
+:minisite-index-icon: play
+
+== BaseLoginModule
+
+This is an `abstract` class enabling to simplify the coding of a login module.
+
+Usage:
+
+[source,java]
+----
+public class MyLoginModule extends BaseLoginModule {
+    @Override
+    protected List<Principal> computePrincipals() {
+        return /* compute principals */;
+    }
+}
+----
+
+Principals have access to the `options`/configuration of the login module through `parameters.options`.
+
+== MatchingPrincipalLoginModule
+
+This is another `abstract` class which reads options to find matchers and will call `computePrincipals()` method only if it matches, else the login module is ignored.
+
+IMPORTANT: it is a matcher which is intended to be placed after another `LoginModule` since it will test existing `Principal` - computed by previous `LoginModules` to create its own ones.
+
+IMPORTANT: the matching happens in `commit` hook and not `login` to ensure we can access subject principals.
+
+Here are the matcher configuration - to set through `LoginModule` configuration:
+
+[options="header",cols="1m,6,1m"]
+|===
+| Name | Description | Default
+| matcher.allRequired | Boolean requiring that all matchers match, if `false` a single matching is sufficient to enable the login module principal computation. | false
+| matcher.singleMatchingPrincipal | Boolean requiring that a single principal was matched thanks matchers (`isNumber`, `regex`, ...). | false
+| matcher.hasName | An exact string which will be tested against principal names (faster than regex). | -
+| matcher.regex | Java `Pattern`/regex at least one `Principal` of the current `Subject` should match - it means at least one of the previous `LoginModules` should have created a matching principal name. | -
+| matcher.startsWith | A prefix a principal should have (faster than regex). | -
+| matcher.endsWith | A prefix a principal should have (faster than regex). | -
+| matcher.isNumber | Optimized flavor of the pattern matching for principals which should be numbers. | false
+| matcher.count | Matches if the subject principal count is equal to the provided value | -
+| matcher.isNumber.min | For `matcher.isNumber` rule, the minimum accepted number | -
+| matcher.isNumber.max | For `matcher.isNumber` rule, the maximum accepted number | -
+|===
+
+== InterpolatingSinglePrincipalLoginModule
+
+`InterpolatingSinglePrincipalLoginModule` is a `MatchingPrincipalLoginModule` which expects a single matching principal.
+In such a case, it will use its rule to compute another principal from the matching one.
+
+Common example is to deduce a group principal from the user name.
+
+NOTE: it is a matching login module where `singleMatchingPrincipal` is forced to be `true`.
+
+For example if only `the-user` is matching, then you can create with this login module the principal `group-the-user`.
+
+Its configuration is:
+
+[options="header",cols="1m,6"]
+|===
+| Name | Description
+| interpolation.pattern | The principal value in case of matching, it can use `{name}` as a placeholder for the matching principal name.
+| interpolation.principal.type | Class name of the principal if custom (`SimplePrincipal` is used otherwise)
+|===
+
+Sample usage:
+
+[source,properties]
+----
+MyLoginModule {
+    com.foo.MyAuthLoginModule required;
+    io.yupiik.jaas.loginmodules.InterpolatingSinglePrincipalLoginModule optional
+        matcher.regex="user_\p{Digit}"
+        interpolation.pattern="group_{name}"
+        interpolation.principal.type="org.apache.activemq.jaas.GroupPrincipal"
+    ;
+}
+----
+
+== ConditionalDelegatingLoginModule
+
+This login module intent is to use a login module configured with `delegate.class` option
+and only instantiated in `commit` phase when a matching (inherited from `MatchingPrincipalLoginModule`) is done.
