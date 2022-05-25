@@ -1,0 +1,117 @@
+= Samples
+:minisite-index: 200
+:minisite-index-title: Samples
+:minisite-index-description: Sample configuration/usages.
+:minisite-index-icon: play
+
+This page lists some common configuration samples.
+All the provided configuration is intended to belong to a JAAS configuration file.
+As a quick reminder, this configuration is defined by `java.security.auth.login.config` system property (by default) on the JVM.
+For example: `-Djava.security.auth.login.config=/path/to/my/jaas.config`.
+
+== ActiveMQ
+
+This section targets an activemq server/broker.
+It is primarly intended to work with `JAASAuthenticationPlugin` to load the user security context.
+
+=== LDAP authentication with computed group
+
+[source,properties]
+----
+LDAPAMQLogin {
+    org.apache.activemq.jaas.LDAPLoginModule requisite <1>
+
+      <2>
+      initialContextFactory=com.sun.jndi.ldap.LdapCtxFactory
+      connectionURL="ldap://localhost:389"
+      connectionUsername="uid=admin,ou=system"
+      connectionPassword="password"
+      connectionProtocol=s
+      authentication=simple
+
+      // <2>
+      userBase="ou=User,ou=ActiveMQ,ou=system"
+      userSearchMatching="(uid={0})"
+      userSearchSubtree=false
+
+      // <3>
+      roleBase="ou=Group,ou=ActiveMQ,ou=system"
+      roleSearchMatching="(uid={1},ou=User,ou=ActiveMQ,ou=system)";
+
+    io.yupiik.jaas.loginmodules.InterpolatingSinglePrincipalLoginModule optional // <4>
+        matcher.isNumber="true" <5>
+        interpolation.pattern="group_{name}" <6>
+        interpolation.principal.type="org.apache.activemq.jaas.GroupPrincipal" <7>
+    ;
+};
+----
+<.> LDAP ActiveMQ login module will authenticate the user validating its credentials (username/password pair). This phase is marked as `requisite` which means it is required and in case of failure other phases - login modules - are ignored.
+<.> How to bind the user to validate its username/password pair,
+<.> Disable group loading from LDAP (no `roleName` means skips but `roleBase` and `roleSearchMatching` are required configuration),
+<.> Add an interpolating login module which will deduce a group from the principal computed by ActiveMQ LDAP Login Module,
+<.> Ensure the ActiveMQ username matches the rules configured (here that the username is a number but it could be a `regex` too, see xref:login-modules.adoc[reference] documentation for more information),
+<.> Compute the group name with `group_<name>` pattern,
+<.> Instantiate the principal with ActiveMQ group principal type (optional).
+
+Note that a variant of this configuration which would be a bit faster thanks LDAP connection pooling would use the Sun native login module - but the principal will not be an ActiveMQ `UserPrincipal` but a sun one - shouldn't impact the runtime:
+
+[source,properties]
+----
+LDAPAMQLogin {
+    com.sun.security.auth.module.LdapLoginModule requisite
+      userProvider="ldap://localhost:389"
+      authIdentity="uid={USERNAME},ou=User,ou=ActiveMQ,ou=system"
+      useSSL=false
+      com.sun.jndi.ldap.connect.pool=true
+
+    io.yupiik.jaas.loginmodules.InterpolatingSinglePrincipalLoginModule optional
+        matcher.isNumber="true"
+        interpolation.pattern="group_{name}"
+        interpolation.principal.type="org.apache.activemq.jaas.GroupPrincipal"
+    ;
+};
+----
+
+To fully use ActiveMQ principal types, you can wrap the first login module in a `TypedPrincipalLoginModule`:
+
+[source,properties]
+----
+LDAPAMQLogin {
+    io.yupiik.jaas.loginmodules.TypedPrincipalLoginModule requisite
+      delegate.class="com.sun.security.auth.module.LdapLoginModule"
+      delegate.configuration.userProvider="ldap://localhost:389"
+      delegate.configuration.authIdentity="uid={USERNAME},ou=User,ou=ActiveMQ,ou=system"
+      delegate.configuration.useSSL=false
+      delegate.configuration.com.sun.jndi.ldap.connect.pool=true
+      principal.type="org.apache.activemq.jaas.UserPrincipal"
+    ;
+
+
+    io.yupiik.jaas.loginmodules.InterpolatingSinglePrincipalLoginModule optional
+      matcher.isNumber="true"
+      interpolation.pattern="group_{name}"
+      interpolation.principal.type="org.apache.activemq.jaas.GroupPrincipal"
+    ;
+};
+----
+
+== TomEE
+
+Main issue with TomEE is to provide to the server the principal which is the username (to work with all EE components when a principal must be injected or alike).
+There are multiple strategies but one is to mark the principal with `org.apache.openejb.spi.CallerPrincipal` which is not always possible, in particular when a login module already exists.
+To solve that case, we can reuse TomEE `org.apache.openejb.core.security.jaas.UserPrincipal` and simply wrap the underlying principal with `TypedPrincipalLoginModule`:
+
+[source,properties]
+.LDAP example
+----
+TomEELDAPLogin {
+    io.yupiik.jaas.loginmodules.TypedPrincipalLoginModule required
+      delegate.class="com.sun.security.auth.module.LdapLoginModule"
+      delegate.configuration.userProvider="ldap://localhost:389"
+      delegate.configuration.authIdentity="uid={USERNAME},ou=User,ou=system"
+      delegate.configuration.useSSL=false
+      delegate.configuration.com.sun.jndi.ldap.connect.pool=true
+      principal.type="org.apache.openejb.core.security.jaas.UserPrincipal"
+    ;
+};
+----

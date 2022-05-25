@@ -2,7 +2,24 @@
 :minisite-index: 200
 :minisite-index-title: Login Modules
 :minisite-index-description: List of reusable login modules.
-:minisite-index-icon: play
+:minisite-index-icon: shield-alt
+
+TIP: to see sample configurations, read xref:sample-gallery.adoc[gallery samples] page.
+
+== Maven Usage
+
+To add `{artifactId}` to your project, use the following dependency:
+
+[source,xml]
+----
+<dependency>
+  <groupId>{groupId}</groupId>
+  <artifactId>{artifactId}</artifactId>
+  <version>${yupiik-loginmodules.version}</version>
+</dependency>
+----
+
+TIP: you can select the version you want for `yupiik-loginmodules.version` at https://repo.maven.apache.org/maven2/io/yupiik/jaas/jaas-login-modules/.
 
 == BaseLoginModule
 
@@ -85,3 +102,32 @@ MyLoginModule {
 
 This login module intent is to use a login module configured with `delegate.class` option
 and only instantiated in `commit` phase when a matching (inherited from `MatchingPrincipalLoginModule`) is done.
+
+== TypedPrincipalLoginModule
+
+The sole purpose of this login module is to use another principal type for all principals computed by the underlying login module:
+
+Its configuration is:
+
+[options="header",cols="1m,6"]
+|===
+| Name | Description
+| delegate.class | The login module type to delegate to (class name).
+| delegate.configuration.xxx | Any configuration element of the `delegate.class` login module (prefix `delegate.configuraton.` is removed).
+| interpolation.principal.type | Class name of the principal.
+| removeWrapped | By default the wrapped principals are replaced but setting it to `false` will ust add the wrappers keeping original principals, this enables to keep the additional metadata if relevant by casting the principal.
+|===
+
+Sample usage:
+
+[source,properties]
+----
+MyLoginModule {
+    io.yupiik.jaas.loginmodules.TypedPrincipalLoginModule optional
+        delegate.class="com.superbiz.jaas.MyLoginModuleCreatingAFooPrincipal"
+        principal.type="org.apache.activemq.jaas.GroupPrincipal"
+    ;
+}
+----
+
+This configuration will use `org.apache.activemq.jaas.GroupPrincipal` for all principals added by `MyLoginModuleCreatingAFooPrincipal` in commit phase.

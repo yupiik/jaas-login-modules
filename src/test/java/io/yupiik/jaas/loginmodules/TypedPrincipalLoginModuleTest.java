@@ -15,7 +15,7 @@
  */
 package io.yupiik.jaas.loginmodules;
 
-import io.yupiik.jaas.loginmodules.factory.PrincipalFactory;
+import io.yupiik.jaas.loginmodules.principal.SimplePrincipal;
 import org.junit.jupiter.api.Test;
 
 import javax.security.auth.Subject;
@@ -24,39 +24,57 @@ import javax.security.auth.login.Configuration;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static io.yupiik.jaas.loginmodules.test.Extractors.principals;
-import static java.util.Collections.emptyMap;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static javax.security.auth.login.AppConfigurationEntry.LoginModuleControlFlag.REQUIRED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class BaseLoginModuleTest {
+class TypedPrincipalLoginModuleTest {
     @Test
-    void success() throws LoginException {
+    void run() throws LoginException {
+        final Subject subject = new Subject();
+        subject.getPrincipals().add(new SimplePrincipal("a1"));
+
+        final Map<String, Object> options = new HashMap<>();
+        options.put("delegate.class", StaticLM.class.getName());
+        options.put("delegate.configuraton.name", "conf");
+        options.put("principal.type", Pcp.class.getName());
+
         final LoginContext context = new LoginContext(
-                "DeducedPrincipalsLoginModulesTest",
-                new Subject(),
+                "TypedPrincipalLoginModuleTest",
+                subject,
                 null,
                 new Configuration() {
                     @Override
                     public AppConfigurationEntry[] getAppConfigurationEntry(final String name) {
                         return new AppConfigurationEntry[]{
-                                new AppConfigurationEntry(LM.class.getName(), REQUIRED, emptyMap())
+                                new AppConfigurationEntry(TypedPrincipalLoginModule.class.getName(), REQUIRED, options)
                         };
                     }
                 });
         context.login();
-        assertEquals(singletonList("test"), principals(context));
+        assertEquals(
+                asList(
+                        Pcp.class.getName() + "=conf",
+                        SimplePrincipal.class.getName() + "=a1"),
+                principals(context, p -> p.getClass().getName() + "=" + p.getName()));
     }
 
-    public static class LM extends BaseLoginModule {
+    public static class StaticLM extends BaseLoginModule {
         @Override
         protected List<Principal> computePrincipals() {
-            return singletonList(PrincipalFactory.create( // just to show how to use it
-                    String.class.cast(parameters.options.get("userPrincipalClass")),
-                    "test"));
+            return singletonList(new SimplePrincipal(parameters.options.get("name").toString()));
+        }
+    }
+
+    public static class Pcp extends SimplePrincipal {
+        public Pcp(final String name) {
+            super(name);
         }
     }
 }

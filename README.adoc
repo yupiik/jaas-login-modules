@@ -1,0 +1,5 @@
+= Yupiik JAAS LoginModules
+
+Documentation: https://yupiik.io/jaas-login-modules/.
+
+Module is dependency free and can be downloaded at https://repo.maven.apache.org/maven2/io/yupiik/jaas/jaas-login-modules/.
