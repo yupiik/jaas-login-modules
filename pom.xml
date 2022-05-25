@@ -152,7 +152,7 @@
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
-      <url>https://github.com/yupiik/tools-maven-plugin/blob/master/LICENSE</url>
+      <url>https://github.com/yupiik/jaas-login-modules/blob/master/LICENSE</url>
       <distribution>may be downloaded from the Maven repository</distribution>
     </license>
   </licenses>
@@ -202,4 +202,11 @@
       </build>
     </profile>
   </profiles>
+
+  <scm>
+    <connection>scm:git:https://github.com/yupiik/jaas-login-modules.git</connection>
+    <developerConnection>scm:git:https://github.com/yupiik/jaas-login-modules.git</developerConnection>
+    <url>https://github.com/yupiik/jaas-login-modules.git</url>
+    <tag>HEAD</tag>
+  </scm>
 </project>
