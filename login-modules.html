@@ -47,7 +47,11 @@
             <ul>
                 <li>
                     <a title="Login Modules" href="//www.yupiik.io/jaas-login-modules/login-modules.html">
-                        <i class="fas fa-play"></i>Login Modules
+                        <i class="fas fa-shield-alt"></i>Login Modules
+                    </a>
+                </li>                <li>
+                    <a title="Samples" href="//www.yupiik.io/jaas-login-modules/sample-gallery.html">
+                        <i class="fas fa-play"></i>Samples
                     </a>
                 </li>
             </ul>
@@ -58,7 +62,52 @@
                 <h1>Login Modules</h1>
             </div>
             <div class="page-content-body">
-                <div class="sect1">
+                <div id="preamble">
+<div class="sectionbody">
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+to see sample configurations, read <a href="sample-gallery.html">gallery samples</a> page.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_maven_usage">Maven Usage</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To add <code>jaas-login-modules</code> to your project, use the following dependency:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+  &lt;groupId&gt;{groupId}&lt;/groupId&gt;
+  &lt;artifactId&gt;{artifactId}&lt;/artifactId&gt;
+  &lt;version&gt;${yupiik-loginmodules.version}&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+you can select the version you want for <code>yupiik-loginmodules.version</code> at <a href="https://repo.maven.apache.org/maven2/io/yupiik/jaas/jaas-login-modules/" class="bare">https://repo.maven.apache.org/maven2/io/yupiik/jaas/jaas-login-modules/</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_baseloginmodule">BaseLoginModule</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -256,6 +305,63 @@ it is a matching login module where <code>singleMatchingPrincipal</code> is forc
 <div class="paragraph">
 <p>This login module intent is to use a login module configured with <code>delegate.class</code> option
 and only instantiated in <code>commit</code> phase when a matching (inherited from <code>MatchingPrincipalLoginModule</code>) is done.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_typedprincipalloginmodule">TypedPrincipalLoginModule</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The sole purpose of this login module is to use another principal type for all principals computed by the underlying login module:</p>
+</div>
+<div class="paragraph">
+<p>Its configuration is:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 85.7143%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>delegate.class</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The login module type to delegate to (class name).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>delegate.configuration.xxx</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Any configuration element of the <code>delegate.class</code> login module (prefix <code>delegate.configuraton.</code> is removed).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>interpolation.principal.type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Class name of the principal.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>removeWrapped</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">By default the wrapped principals are replaced but setting it to <code>false</code> will ust add the wrappers keeping original principals, this enables to keep the additional metadata if relevant by casting the principal.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Sample usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">MyLoginModule {
+    io.yupiik.jaas.loginmodules.TypedPrincipalLoginModule optional
+        delegate.class="com.superbiz.jaas.MyLoginModuleCreatingAFooPrincipal"
+        principal.type="org.apache.activemq.jaas.GroupPrincipal"
+    ;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This configuration will use <code>org.apache.activemq.jaas.GroupPrincipal</code> for all principals added by <code>MyLoginModuleCreatingAFooPrincipal</code> in commit phase.</p>
 </div>
 </div>
 </div>
