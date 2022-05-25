@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Login Modules</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JAAS Login Modules">
+    <meta name="author" content="Yupiik Minisite Generator">
+    <meta name="generator" content="Yupiik Minisite Generator">
+    
+    <link rel="shortcut icon" href="//www.yupiik.com/img/favicon.png">
+
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Montserrat:300,400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/asciidoctor.js/1.5.5-5/css/asciidoctor.min.css" integrity="sha512-kI7tn5cuEg16kMeXnYmg8rEJPxbxzEM7Gsr191iQdLDevFBLXPCSU9aZWSVuP61tMZWU3nBAR1cJ7SmXnOGLZw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css" integrity="sha512-oc9+XSs1H243/FRN9Rw62Fn8EtxjEYWHXRvjS43YtueEewbS6ObfXcJNyohjHqVKFPoXXUxwc+q1K7Dee6vv9g==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/styles/vs2015.min.css" integrity="sha512-w8aclkBlN3Ha08SMwFKXFJqhSUx2qlvTBFLLelF8sm4xQnlg64qmGB/A6pBIKy0W8Bo51yDMDtQiPLNRq1WMcQ==" crossorigin="anonymous" />
+    <link id="theme-style" rel="stylesheet" href="http://localhost:4200/css/theme.css?v=1.0.1-SNAPSHOT">
+    
+</head>
+<body>
+    <header class="header fixed-top">
+        <div class="branding docs-branding">
+            <div class="container-fluid position-relative py-2">
+                <div class="docs-logo-wrapper">
+	                <div class="site-logo"><a title="Home" class="navbar-brand" href="http://localhost:4200/index.html">
+	                <img class="logo-icon mr-2" src="//www.yupiik.com/img/favicon.png" alt="logo">
+	                <span class="logo-text">JAAS Login Modules <span class="text-alt">Docs</span></span></a></div>
+                </div>
+	            <div class="docs-top-utilities d-flex justify-content-end align-items-center">
+					
+					<li class="list-inline-item"><a title="Search" id="search-button" href="#" data-toggle="modal" data-target="#searchModal"><i data-toggle="tooltip" data-placement="top" title="Search" class="fas fa-search"></i></a></li>
+
+					<ul class="social-list list-inline mx-md-3 mx-lg-5 mb-0 d-none d-lg-flex">
+						
+						<li class="list-inline-item"><a href="https://www.github.com/yupiik/"><i class="fab fa-github fa-fw"></i></a></li><li class="list-inline-item"><a href="https://www.linkedin.com/company/yupiik/"><i class="fab fa-linkedin fa-fw"></i></a></li>
+		            </ul>
+	            </div>
+            </div>
+        </div>
+    </header>
+	<div class="page">
+        <div class="page-navigation-left">
+            <h3>Menu</h3>
+            <ul>
+                <li>
+                    <a title="Login Modules" href="http://localhost:4200/login-modules.html">
+                        <i class="fas fa-play"></i>Login Modules
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div id="login-modules-html-container" class="container page-content login-modules-html">
+                        <div class="page-header">
+                <h1>Login Modules</h1>
+            </div>
+            <div class="page-content-body">
+                <div class="sect1">
+<h2 id="_baseloginmodule">BaseLoginModule</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is an <code>abstract</code> class enabling to simplify the coding of a login module.</p>
+</div>
+<div class="paragraph">
+<p>Usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class MyLoginModule extends BaseLoginModule {
+    @Override
+    protected List&lt;Principal&gt; computePrincipals() {
+        return /* compute principals */;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Principals have access to the <code>options</code>/configuration of the login module through <code>parameters.options</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_matchingprincipalloginmodule">MatchingPrincipalLoginModule</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is another <code>abstract</code> class which reads options to find matchers and will call <code>computePrincipals()</code> method only if it matches, else the login module is ignored.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+it is a matcher which is intended to be placed after another <code>LoginModule</code> since it will test existing <code>Principal</code> - computed by previous <code>LoginModules</code> to create its own ones.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+the matching happens in <code>commit</code> hook and not <code>login</code> to ensure we can access subject principals.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here are the matcher configuration - to set through <code>LoginModule</code> configuration:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 75%;">
+<col style="width: 12.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matcher.allRequired</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean requiring that all matchers match, if <code>false</code> a single matching is sufficient to enable the login module principal computation.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matcher.singleMatchingPrincipal</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean requiring that a single principal was matched thanks matchers (<code>isNumber</code>, <code>regex</code>, &#8230;&#8203;).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matcher.hasName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An exact string which will be tested against principal names (faster than regex).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matcher.regex</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Java <code>Pattern</code>/regex at least one <code>Principal</code> of the current <code>Subject</code> should match - it means at least one of the previous <code>LoginModules</code> should have created a matching principal name.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matcher.startsWith</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A prefix a principal should have (faster than regex).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matcher.endsWith</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A prefix a principal should have (faster than regex).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matcher.isNumber</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Optimized flavor of the pattern matching for principals which should be numbers.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matcher.count</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Matches if the subject principal count is equal to the provided value</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matcher.isNumber.min</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">For <code>matcher.isNumber</code> rule, the minimum accepted number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>matcher.isNumber.max</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">For <code>matcher.isNumber</code> rule, the maximum accepted number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_interpolatingsingleprincipalloginmodule">InterpolatingSinglePrincipalLoginModule</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>InterpolatingSinglePrincipalLoginModule</code> is a <code>MatchingPrincipalLoginModule</code> which expects a single matching principal.
+In such a case, it will use its rule to compute another principal from the matching one.</p>
+</div>
+<div class="paragraph">
+<p>Common example is to deduce a group principal from the user name.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+it is a matching login module where <code>singleMatchingPrincipal</code> is forced to be <code>true</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>For example if only <code>the-user</code> is matching, then you can create with this login module the principal <code>group-the-user</code>.</p>
+</div>
+<div class="paragraph">
+<p>Its configuration is:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 85.7143%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>interpolation.pattern</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The principal value in case of matching, it can use <code>{name}</code> as a placeholder for the matching principal name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>interpolation.principal.type</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Class name of the principal if custom (<code>SimplePrincipal</code> is used otherwise)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Sample usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">MyLoginModule {
+    com.foo.MyAuthLoginModule required;
+    io.yupiik.jaas.loginmodules.InterpolatingSinglePrincipalLoginModule optional
+        matcher.regex="user_\p{Digit}"
+        interpolation.pattern="group_{name}"
+        interpolation.principal.type="org.apache.activemq.jaas.GroupPrincipal"
+    ;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conditionaldelegatingloginmodule">ConditionalDelegatingLoginModule</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This login module intent is to use a login module configured with <code>delegate.class</code> option
+and only instantiated in <code>commit</code> phase when a matching (inherited from <code>MatchingPrincipalLoginModule</code>) is done.</p>
+</div>
+</div>
+</div>
+                
+            </div>
+        </div>
+    <div class="page-navigation-right">
+        <h3>Navigation</h3>
+        <nav class="generated-nav-menu"></nav>
+    </div>
+    </div>
+    <hr />
+    <footer class="footer pb-5">
+	    <div class="footer-bottom text-center">
+		    <ul class="social-list list-unstyled">
+                <li class="list-inline-item"><a href="https://www.github.com/yupiik/"><i class="fab fa-github fa-fw"></i></a></li><li class="list-inline-item"><a href="https://www.linkedin.com/company/yupiik/"><i class="fab fa-linkedin fa-fw"></i></a></li>
+	        </ul>
+            <small class="copyright">Yupiik &copy;</small> | <a href="https://www.yupiik.com/terms-of-service/">Terms of service</a> | <a href="https://www.yupiik.com/privacy-policy/">Privacy policy</a>
+	    </div>
+    </footer>
+
+    <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="searchModalLabel">Search</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="return false;" class="form-inline">
+          <div class="form-group">
+            <label for="searchInput"><b>Search: </b></label>
+            <input class="form-control" id="searchInput" placeholder="Enter search text and hit enter...">
+          </div>
+        </form>
+        <div class="search-hits"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" ></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.min.js" integrity="sha512-8qmis31OQi6hIRgvkht0s6mCOittjMa9GMqtK9hes5iEQBQE/Ca6yGE5FsW36vyipGoWQswBj/QBm2JR086Rkw==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/highlight.min.js" integrity="sha512-d00ajEME7cZhepRqSIVsQVGDJBdZlfHyQLNC6tZXYKTG7iwcF8nhlFuppanz8hYgXr8VvlfKh4gLC25ud3c90A==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/languages/bash.min.js" integrity="sha512-Hg0ufGEvn0AuzKMU0psJ1iH238iUN6THh7EI0CfA0n1sd3yu6PYet4SaDMpgzN9L1yQHxfB3yc5ezw3PwolIfA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/languages/bash.min.js" integrity="sha512-Hg0ufGEvn0AuzKMU0psJ1iH238iUN6THh7EI0CfA0n1sd3yu6PYet4SaDMpgzN9L1yQHxfB3yc5ezw3PwolIfA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/languages/json.min.js" integrity="sha512-37sW1XqaJmseHAGNg4N4Y01u6g2do6LZL8tsziiL5CMXGy04Th65OXROw2jeDeXLo5+4Fsx7pmhEJJw77htBFg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/languages/dockerfile.min.js" integrity="sha512-eRNl3ty7GOJPBN53nxLgtSSj2rkYj5/W0Vg0MFQBw8xAoILeT6byOogENHHCRRvHil4pKQ/HbgeJ5DOwQK3SJA==" crossorigin="anonymous"></script>
+    <script>if (!(window.minisite || {}).skipHighlightJs) { hljs.highlightAll(); }</script>
+    <script src="http://localhost:4200/js/minisite.js?v=1.0.1-SNAPSHOT"></script>
+    <script>$('.page-content-body').generatedNavMenu();</script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.3/fuse.min.js" integrity="sha512-neoBxVNv0UMXjoilAYGxfWrSsW6iAVclx7vQKdPJ9Peet1bM5YQjU0aIB8LtH8iNPa+pAyMZprBBw2ZQ/Q1LjQ==" crossorigin="anonymous"></script>
+
+</body>
+</html>
