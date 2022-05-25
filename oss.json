@@ -1,0 +1,12 @@
+{
+  "skip": true,
+  "name": "JAAS Login Modules",
+  "description": "Provides Helper JAAS LoginModules to ease integrations with 3rd parties (like Apache TomEE/ActiveMQ).",
+  "website": "https://www.yupiik.io/jaas-login-modules/",
+  "logo": "https://www.yupiik.com/img/logo.png",
+  "categories": [
+    "java",
+    "jaas",
+    "security"
+  ]
+}
