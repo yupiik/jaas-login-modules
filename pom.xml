@@ -4,7 +4,7 @@
 
   <groupId>io.yupiik.jaas</groupId>
   <artifactId>jaas-login-modules</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>Yupiik JAAS Login Modules</name>
   <description>Provides Helper JAAS LoginModules to ease integrations with 3rd parties (like Apache TomEE/ActiveMQ).</description>
   <url>https://www.yupiik.com/</url>
@@ -217,6 +217,6 @@
     <connection>scm:git:https://github.com/yupiik/jaas-login-modules.git</connection>
     <developerConnection>scm:git:https://github.com/yupiik/jaas-login-modules.git</developerConnection>
     <url>https://github.com/yupiik/jaas-login-modules.git</url>
-    <tag>HEAD</tag>
+    <tag>jaas-login-modules-1.0.0</tag>
   </scm>
 </project>
