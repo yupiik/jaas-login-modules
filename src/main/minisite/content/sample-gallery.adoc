@@ -115,3 +115,5 @@ TomEELDAPLogin {
     ;
 };
 ----
+
+WARNING: until 1.0.1 release (included), `delegate.configuration` prefix was named `delegate.configuraton`.

@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -51,9 +52,11 @@ public class TypedPrincipalLoginModule implements LoginModule {
                     .asSubclass(LoginModule.class)
                     .getConstructor()
                     .newInstance();
-            this.delegate.initialize(subject, callbackHandler, sharedState, options.entrySet().stream()
-                    .filter(it -> it.getKey().startsWith("delegate.configuraton."))
-                    .collect(toMap(e -> e.getKey().substring("delegate.configuraton.".length()), Map.Entry::getValue)));
+
+            final Map<String, Object> delegateOptions = new HashMap<>(filterByPrefix("delegate.configuration.", options)); // backward compat
+            delegateOptions.putAll(filterByPrefix("delegate.configuraton.", options));
+
+            this.delegate.initialize(subject, callbackHandler, sharedState, delegateOptions);
         } catch (final InstantiationException | IllegalAccessException | NoSuchMethodException |
                        ClassNotFoundException e) {
             throw new IllegalStateException(e);
@@ -97,5 +100,11 @@ public class TypedPrincipalLoginModule implements LoginModule {
     @Override
     public boolean logout() throws LoginException {
         return delegate != null && delegate.logout();
+    }
+
+    private Map<String, ?> filterByPrefix(final String prefix, final Map<String, ?> options) {
+        return options.entrySet().stream()
+                .filter(it -> it.getKey().startsWith(prefix))
+                .collect(toMap(e -> e.getKey().substring(prefix.length()), Map.Entry::getValue));
     }
 }
